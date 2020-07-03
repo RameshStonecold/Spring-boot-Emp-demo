@@ -1,9 +1,11 @@
 package com.example.employeebe.controller
 
+import com.example.employeebe.config.ResponseWithError
 import com.example.employeebe.model.EmployeeState
 import com.example.employeebe.model.RegisterDto
 import com.example.employeebe.model.Role
 import com.example.employeebe.repository.EmpMongoRepo
+import com.example.employeebe.service.IEmpService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,15 +16,29 @@ import org.springframework.web.bind.annotation.*
 class EmpController {
 
     @Autowired
-    private lateinit var empRepo:EmpMongoRepo
+    private lateinit var empRepo: EmpMongoRepo
 
-@CrossOrigin
-@PostMapping("/register")
-fun registerEmp(@RequestBody registerDto: RegisterDto):EmployeeState =
 
-        empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
-                registerDto.emailId,registerDto.password,
-        Role.User))
+    @Autowired
+    private lateinit var empService: IEmpService
+
+    @CrossOrigin
+    @PostMapping("/register")
+    fun registerEmp(@RequestBody registerDto: RegisterDto): ResponseEntity<*> {
+
+        try {
+            val empOptional = empRepo.findByEmailId(registerDto.emailId ?: "")
+            if (empOptional.isEmpty) {
+                empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
+                        registerDto.emailId, registerDto.password,
+                        Role.User))
+                return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
+            }
+            return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            return ResponseEntity(ResponseWithError.ofError<String>("Error{}"), HttpStatus.BAD_REQUEST)
+        }
+    }
 
 
     @CrossOrigin
@@ -30,7 +46,7 @@ fun registerEmp(@RequestBody registerDto: RegisterDto):EmployeeState =
     fun findById(@PathVariable("empId") empId:String):ResponseEntity<*> {
 
     return  empRepo.findById(empId).map {
-        ResponseEntity.ok(it)
+        ResponseEntity.ok(ResponseWithError.of(it))
     }.orElse(ResponseEntity.notFound().build())
     }
 
@@ -38,7 +54,26 @@ fun registerEmp(@RequestBody registerDto: RegisterDto):EmployeeState =
     @GetMapping("/getEmps")
     fun findAllEmps():ResponseEntity<*> {
 
-        return  ResponseEntity.ok(empRepo.findAll().filter { it.role.compareTo(Role.User)==0 })
+        return ResponseEntity(ResponseWithError.of(empRepo.findAll().filter { it.role.compareTo(Role.User)==0 }),
+                HttpStatus.BAD_REQUEST)
+
         }
+
+@GetMapping("/getEmpByEmailId/{emailId}")
+fun findByEmailId(@PathVariable("emailId") emailId:String):ResponseEntity<*> {
+
+    return try {
+        val emp = empService.getByEmailId(emailId)
+        ResponseEntity.ok(ResponseWithError.of(emp))
+    }catch (e:Exception){
+        ResponseEntity(ResponseWithError.ofError<String>("Email Id not found"),
+                HttpStatus.BAD_REQUEST)
     }
+
+ }
+}
+
+
+
+
 
