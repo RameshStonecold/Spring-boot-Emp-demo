@@ -6,5 +6,5 @@ import java.util.*
 
 interface EmpMongoRepo:MongoRepository<EmployeeState,String> {
 
-    fun findByEmailId(emailId: String):Optional<EmployeeState>
+    fun findByEmailId(emailId: String):EmployeeState
 }

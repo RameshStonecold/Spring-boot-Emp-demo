@@ -28,8 +28,8 @@ class EmpController {
     fun registerEmp(@RequestBody registerDto: RegisterDto): ResponseEntity<*> {
 
         try {
-            val empOptional = empRepo.findByEmailId(registerDto.emailId ?: "")
-            if (empOptional.isEmpty) {
+            val emp = empRepo.findByEmailId(registerDto.emailId ?: "")
+            if (emp.emailId.isNullOrBlank()) {
                 empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
                         registerDto.emailId, registerDto.password,
                         Role.User))
