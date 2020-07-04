@@ -28,14 +28,18 @@ class EmpController {
     fun registerEmp(@RequestBody registerDto: RegisterDto): ResponseEntity<*> {
 
         try {
-            val emp = empRepo.findByEmailId(registerDto.emailId ?: "")
-            if (emp.emailId.isNullOrBlank()) {
+            //val emp = empRepo.findByEmailId(registerDto.emailId ?: "")
+           /* if (emp.emailId==null || emp.emailId!!.isEmpty()) {
                 empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
                         registerDto.emailId, registerDto.password,
                         Role.User))
                 return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
-            }
-            return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
+            }*/
+           // return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
+            empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
+                    registerDto.emailId, registerDto.password,
+                    Role.User))
+            return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
         } catch (e: Exception) {
             return ResponseEntity(ResponseWithError.ofError<String>("Error{}"), HttpStatus.BAD_REQUEST)
         }
@@ -56,7 +60,7 @@ class EmpController {
     fun findAllEmps():ResponseEntity<*> {
 
         return ResponseEntity(ResponseWithError.of(empRepo.findAll().filter { it.role.compareTo(Role.User)==0 }),
-                HttpStatus.BAD_REQUEST)
+                HttpStatus.OK)
 
         }
 
