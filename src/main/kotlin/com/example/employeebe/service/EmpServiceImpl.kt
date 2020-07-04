@@ -54,15 +54,12 @@ class EmpServiceImpl:IEmpService {
     }
 
     override fun loginEmp(loginDto: LoginDto): ResponseWithError<*> {
+        val emp = empRepo.findByEmailId(loginDto.userNameOrEmailId?.trim()?:"")
+        if(emp.emailId!!.isNotBlank() && emp.password!!.equals(loginDto.password?.trim()) ){
 
-        val result =this.getByEmailId(loginDto.userNameOrEmailId?:"")
-        if(!result.isError){
-
-           val res = result.response
-
-            return ResponseWithError.of("Login Success")
+            return ResponseWithError.of("Login Success !")
         }
-        return ResponseWithError.ofError<String>("Invalid email id entered")
+        return ResponseWithError.ofError<String>("Invalid email id or password entered")
 
     }
 
