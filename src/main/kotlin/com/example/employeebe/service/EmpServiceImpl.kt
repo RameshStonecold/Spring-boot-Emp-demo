@@ -2,6 +2,7 @@ package com.example.employeebe.service
 
 import com.example.employeebe.config.ResponseWithError
 import com.example.employeebe.model.EmployeeState
+import com.example.employeebe.model.LoginDto
 import com.example.employeebe.model.RegisterDto
 import com.example.employeebe.model.Role
 import com.example.employeebe.repository.EmpMongoRepo
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-
 @Service
 class EmpServiceImpl:IEmpService {
 
@@ -51,6 +51,19 @@ class EmpServiceImpl:IEmpService {
     override fun getAllEmps(): ResponseWithError<*> {
         val allEmps = empRepo.findAll()
         return ResponseWithError.of(allEmps)
+    }
+
+    override fun loginEmp(loginDto: LoginDto): ResponseWithError<*> {
+
+        val result =this.getByEmailId(loginDto.userNameOrEmailId?:"")
+        if(!result.isError){
+
+           val res = result.response
+
+            return ResponseWithError.of("Login Success")
+        }
+        return ResponseWithError.ofError<String>("Invalid email id entered")
+
     }
 
 }

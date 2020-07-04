@@ -1,8 +1,9 @@
 package com.example.employeebe.service
 
 import com.example.employeebe.config.ResponseWithError
-import com.example.employeebe.model.EmployeeState
+import com.example.employeebe.model.LoginDto
 import com.example.employeebe.model.RegisterDto
+
 
 interface IEmpService {
 
@@ -13,6 +14,8 @@ interface IEmpService {
     fun getByEmailId(emailId:String):ResponseWithError<*>
 
     fun getAllEmps():ResponseWithError<*>
+
+    fun loginEmp(loginDto: LoginDto):ResponseWithError<*>
 
 
 

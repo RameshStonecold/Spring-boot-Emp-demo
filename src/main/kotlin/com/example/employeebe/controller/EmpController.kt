@@ -2,6 +2,7 @@ package com.example.employeebe.controller
 
 import com.example.employeebe.config.ResponseWithError
 import com.example.employeebe.model.EmployeeState
+import com.example.employeebe.model.LoginDto
 import com.example.employeebe.model.RegisterDto
 import com.example.employeebe.model.Role
 import com.example.employeebe.repository.EmpMongoRepo
@@ -71,6 +72,23 @@ fun findByEmailId(@PathVariable("emailId") emailId:String):ResponseEntity<*> {
     }
 
  }
+
+    @CrossOrigin
+    @PostMapping("/login")
+    fun createLoginCredentials(@RequestBody loginDto: LoginDto):ResponseEntity<*> {
+
+        try {
+            val result = empService.loginEmp(loginDto)
+            if (result.isError) {
+                return ResponseEntity(ResponseWithError.ofError<String>(result.errorMsg), HttpStatus.BAD_REQUEST)
+            }
+            return ResponseEntity(ResponseWithError.of(result.response), HttpStatus.OK)
+        } catch (e: Exception) {
+            return ResponseEntity(ResponseWithError.ofError<String>("Error{}"), HttpStatus.BAD_REQUEST)
+        }
+
+    }
+
 }
 
 
