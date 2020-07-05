@@ -8,9 +8,9 @@ data class EmployeeState (
 
     @Id
     var id :String="",
-    var empFullName :String?=null,
-    var emailId:String?=null,
-    var password:String?=null,
+    var empFullName :String?="",
+    var emailId:String?="",
+    var password:String?="",
     var role: Role
 
 )

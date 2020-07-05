@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RequestMapping("/emp")
 @RestController
@@ -28,18 +29,14 @@ class EmpController {
     fun registerEmp(@RequestBody registerDto: RegisterDto): ResponseEntity<*> {
 
         try {
-            //val emp = empRepo.findByEmailId(registerDto.emailId ?: "")
-           /* if (emp.emailId==null || emp.emailId!!.isEmpty()) {
+            val empOptnl = empRepo.findByEmailId(registerDto.emailId ?: "")
+            if (empOptnl.isEmpty) {
                 empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
                         registerDto.emailId, registerDto.password,
                         Role.User))
                 return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
-            }*/
-           // return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
-            empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
-                    registerDto.emailId, registerDto.password,
-                    Role.User))
-            return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
+            }
+            return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             return ResponseEntity(ResponseWithError.ofError<String>("Error{}"), HttpStatus.BAD_REQUEST)
         }

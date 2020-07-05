@@ -19,7 +19,7 @@ class EmpServiceImpl:IEmpService {
     override fun createEmp(registerDto: RegisterDto): ResponseWithError<*> {
 
         val empOptnl = empRepo.findByEmailId(registerDto.emailId?:"")
-        if ( empOptnl.emailId==null){
+        if ( empOptnl.isEmpty){
             empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
                     registerDto.emailId,registerDto.password,
                     Role.User))
@@ -54,13 +54,12 @@ class EmpServiceImpl:IEmpService {
     }
 
     override fun loginEmp(loginDto: LoginDto): ResponseWithError<*> {
-        val emp = empRepo.findByEmailId(loginDto.userNameOrEmailId?.trim()?:"")
-        if(emp.emailId!!.isNotBlank() && emp.password!!.equals(loginDto.password?.trim()) ){
+        val empOptnl = empRepo.findByEmailId(loginDto.userNameOrEmailId)
 
+        if (empOptnl.isPresent && empOptnl.get().password.equals(loginDto.password)) {
             return ResponseWithError.of("Login Success !")
+        } else {
+            return ResponseWithError.ofError<String>("Invalid email id or password entered")
         }
-        return ResponseWithError.ofError<String>("Invalid email id or password entered")
-
     }
-
 }
