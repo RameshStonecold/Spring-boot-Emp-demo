@@ -19,13 +19,13 @@ class EmpServiceImpl:IEmpService {
     override fun createEmp(registerDto: RegisterDto): ResponseWithError<*> {
 
         val empOptnl = empRepo.findByEmailId(registerDto.emailId?:"")
-        if ( empOptnl.isEmpty){
+    /*    if ( empOptnl.isEmpty){
             empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
                     registerDto.emailId,registerDto.password,
                     Role.User))
 
             return ResponseWithError.of("Register successfully")
-        }
+        }*/
         return ResponseWithError.ofError<String>("Email Id already registered")
 
     }

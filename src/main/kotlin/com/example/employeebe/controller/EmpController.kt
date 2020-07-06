@@ -30,13 +30,18 @@ class EmpController {
 
         try {
             val empOptnl = empRepo.findByEmailId(registerDto.emailId ?: "")
-            if (empOptnl.isEmpty) {
+            if (empOptnl.isPresent) {
+                return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
+            }else{
+                if(registerDto.empFullName.isNullOrBlank() || registerDto.emailId.isNullOrBlank()||
+                        registerDto.password.isNullOrBlank()){
+                    return ResponseEntity(ResponseWithError.ofError<String>("All fields are required"), HttpStatus.BAD_REQUEST)
+                }
                 empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
                         registerDto.emailId, registerDto.password,
                         Role.User))
                 return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
             }
-            return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             return ResponseEntity(ResponseWithError.ofError<String>("Error{}"), HttpStatus.BAD_REQUEST)
         }
