@@ -3,6 +3,7 @@ package com.example.employeebe.service
 import com.example.employeebe.config.ResponseWithError
 import com.example.employeebe.model.LoginDto
 import com.example.employeebe.model.RegisterDto
+import io.vavr.control.Either
 
 
 interface IEmpService {

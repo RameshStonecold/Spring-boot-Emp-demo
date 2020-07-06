@@ -1,0 +1,27 @@
+server:
+  port: 9991
+
+swagger:
+  host: localhost:9991
+  relativePath:
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: Emp-demo
+      repositories:
+        type: auto
+
+app:
+  name: emp-be
+
+jwt:
+  header: Authorization
+  # 24 hours
+  expires_in: 86400
+  # 10 minutes
+  mobile_expires_in: 600
+  secret: JwtSecretKey
+

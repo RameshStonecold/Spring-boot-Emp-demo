@@ -1,17 +1,17 @@
-/*
-package com.example.employeebe.util
+package com.example.employeebe.config
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.util.*
-import javax.servlet.ServletContext
 import springfox.documentation.service.ApiInfo
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.paths.RelativePathProvider
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger2.annotations.EnableSwagger2
+import java.util.*
+import javax.servlet.ServletContext
+
 
 @Configuration
 @EnableSwagger2
@@ -52,10 +52,10 @@ class SwaggerConfig {
         companion object {
 
             val DEFAULT_CONTACT = springfox.documentation.service.Contact(
-                    "Synycs", "http://www.spring.io", "deeksha@clymbr.in")
+                    "Synycs", "http://www.spring.io", "ramesh@clymbr.in")
 
             val DEFAULT_API_INFO = ApiInfo(
-                    "GUTHRIES-IMS", "RESTFULL API Description", "1.0",
+                    "Employee-BE", "RESTFULL API Description", "1.0",
                     "urn:tos", DEFAULT_CONTACT,
                     "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0")
 
@@ -63,4 +63,3 @@ class SwaggerConfig {
         }
     }
 
-*/

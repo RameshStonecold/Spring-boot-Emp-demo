@@ -7,11 +7,11 @@ import com.example.employeebe.model.RegisterDto
 import com.example.employeebe.model.Role
 import com.example.employeebe.repository.EmpMongoRepo
 import com.example.employeebe.service.IEmpService
+import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RequestMapping("/emp")
 @RestController
@@ -22,39 +22,42 @@ class EmpController {
 
 
     @Autowired
-    private lateinit var empService: IEmpService
+    private var empService: IEmpService?=null
 
+    @ApiOperation(value = "Register Emp", notes = "URI to create employee", produces = "application/json",
+            consumes = "application/json", response = String::class)
     @CrossOrigin
     @PostMapping("/register")
     fun registerEmp(@RequestBody registerDto: RegisterDto): ResponseEntity<*> {
 
         try {
-            val empOptnl = empRepo.findByEmailId(registerDto.emailId ?: "")
-            if (empOptnl.isPresent) {
-                return ResponseEntity(ResponseWithError.ofError<String>("Employee already registered with email id"), HttpStatus.BAD_REQUEST)
-            }else{
-                if(registerDto.empFullName.isNullOrBlank() || registerDto.emailId.isNullOrBlank()||
-                        registerDto.password.isNullOrBlank()){
-                    return ResponseEntity(ResponseWithError.ofError<String>("All fields are required"), HttpStatus.BAD_REQUEST)
-                }
-                empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
-                        registerDto.emailId, registerDto.password,
-                        Role.User))
-                return ResponseEntity(ResponseWithError.of("Employee registered successfully"), HttpStatus.CREATED)
+            val res = empService!!.createEmp(registerDto)
+            if (res.isError){
+                return ResponseEntity(res.errorMsg,HttpStatus.BAD_REQUEST)
             }
-        } catch (e: Exception) {
-            return ResponseEntity(ResponseWithError.ofError<String>("Error{}"), HttpStatus.BAD_REQUEST)
+            return ResponseEntity(res.response,HttpStatus.CREATED)
+        }catch (e:Exception){
+            return ResponseEntity(ResponseWithError.ofError<String>("Some thing went wrong"),
+                    HttpStatus.BAD_REQUEST)
         }
+
     }
 
 
     @CrossOrigin
     @GetMapping("/getEmployee/{empId}")
     fun findById(@PathVariable("empId") empId:String):ResponseEntity<*> {
-
-    return  empRepo.findById(empId).map {
-        ResponseEntity.ok(ResponseWithError.of(it))
-    }.orElse(ResponseEntity.notFound().build())
+        try {
+            val res = empService!!.getById(empId)
+            if (res.isError){
+                return ResponseEntity(res.errorMsg,HttpStatus.BAD_REQUEST)
+            }
+            return ResponseEntity(res.response,HttpStatus.OK)
+        }
+        catch (e:Exception){
+            return ResponseEntity(ResponseWithError.ofError<String>("Some thing went wrong"),
+                    HttpStatus.BAD_REQUEST)
+        }
     }
 
     @CrossOrigin
@@ -70,7 +73,7 @@ class EmpController {
 fun findByEmailId(@PathVariable("emailId") emailId:String):ResponseEntity<*> {
 
     return try {
-        val emp = empService.getByEmailId(emailId)
+        val emp = empService!!.getByEmailId(emailId)
         ResponseEntity.ok(ResponseWithError.of(emp))
     }catch (e:Exception){
         ResponseEntity(ResponseWithError.ofError<String>("Email Id not found"),
@@ -84,7 +87,7 @@ fun findByEmailId(@PathVariable("emailId") emailId:String):ResponseEntity<*> {
     fun createLoginCredentials(@RequestBody loginDto: LoginDto):ResponseEntity<*> {
 
         try {
-            val result = empService.loginEmp(loginDto)
+            val result = empService!!.loginEmp(loginDto)
             if (result.isError) {
                 return ResponseEntity(ResponseWithError.ofError<String>(result.errorMsg), HttpStatus.BAD_REQUEST)
             }

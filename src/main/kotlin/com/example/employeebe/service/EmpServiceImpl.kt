@@ -18,16 +18,23 @@ class EmpServiceImpl:IEmpService {
 
     override fun createEmp(registerDto: RegisterDto): ResponseWithError<*> {
 
-        val empOptnl = empRepo.findByEmailId(registerDto.emailId?:"")
-    /*    if ( empOptnl.isEmpty){
-            empRepo.save(EmployeeState(registerDto.id, registerDto.empFullName,
-                    registerDto.emailId,registerDto.password,
-                    Role.User))
-
-            return ResponseWithError.of("Register successfully")
-        }*/
-        return ResponseWithError.ofError<String>("Email Id already registered")
-
+        try {
+            val empOptnl = empRepo.findByEmailId(registerDto.emailId ?: "")
+            if (empOptnl.isPresent) {
+                return ResponseWithError.ofError<String>("Employee already registered with email id")
+            }else{
+                if(registerDto.empFullName.isNullOrBlank() || registerDto.emailId.isNullOrBlank()||
+                        registerDto.password.isNullOrBlank()){
+                    return ResponseWithError.ofError<String>("All fields are required")
+                }
+                empRepo.save(EmployeeState("", registerDto.empFullName,
+                        registerDto.emailId, registerDto.password,
+                        Role.User))
+                return ResponseWithError.of("Employee registered successfully")
+            }
+        } catch (e: Exception) {
+            return ResponseWithError.ofError<String>("Error{}")
+        }
     }
 
     override fun getById(id: String): ResponseWithError<*> {
@@ -39,13 +46,11 @@ class EmpServiceImpl:IEmpService {
     }
 
     override fun getByEmailId(emailId: String): ResponseWithError<*> {
-
-        return try {
-            val emp = empRepo.findByEmailId(emailId)
-            ResponseWithError.of(emp);
-        }catch (e:Exception){
-            ResponseWithError.ofError<String>("Email Id not found")
-        }
+            val empOptional = empRepo.findByEmailId(emailId)
+           if (empOptional.isPresent){
+            return  ResponseWithError.of(empOptional.get());
+           }
+          return ResponseWithError.ofError<String>("Email Id not found")
     }
 
     override fun getAllEmps(): ResponseWithError<*> {

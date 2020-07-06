@@ -27,11 +27,11 @@ public class ResponseWithError<T> {
         this.error=false;
     }
     public static <K> ResponseWithError<K> ofError(String errorMsg){
-        return new ResponseWithError<>(errorMsg);
+        return new ResponseWithError<K>(errorMsg);
     }
 
     public static <K> ResponseWithError<K> ofError(String errorMsg, HttpStatus httpStatus){
-        return new ResponseWithError<>(errorMsg,httpStatus);
+        return new ResponseWithError<K>(errorMsg,httpStatus);
     }
 
     public static <K> ResponseWithError<K> of(K response){
