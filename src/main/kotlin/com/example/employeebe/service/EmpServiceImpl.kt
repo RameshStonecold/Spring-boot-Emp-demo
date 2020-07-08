@@ -1,13 +1,15 @@
 package com.example.employeebe.service
 
+import com.example.employeebe.config.LoginTokenDetails
 import com.example.employeebe.config.ResponseWithError
+import com.example.employeebe.config.tokenprovider.JwtConfig
+import com.example.employeebe.config.tokenprovider.TokenHelper
 import com.example.employeebe.model.EmployeeState
 import com.example.employeebe.model.LoginDto
 import com.example.employeebe.model.RegisterDto
 import com.example.employeebe.model.Role
 import com.example.employeebe.repository.EmpMongoRepo
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 @Service
@@ -15,6 +17,12 @@ class EmpServiceImpl:IEmpService {
 
     @Autowired
     private lateinit var empRepo: EmpMongoRepo
+
+    @Autowired
+    private lateinit var tokenHelper : TokenHelper
+
+    @Autowired
+    private lateinit var jwtConfig: JwtConfig
 
     override fun createEmp(registerDto: RegisterDto): ResponseWithError<*> {
 
@@ -63,6 +71,18 @@ class EmpServiceImpl:IEmpService {
 
         if (empOptnl.isPresent && empOptnl.get().password.equals(loginDto.password)) {
             return ResponseWithError.of("Login Success !")
+        } else {
+            return ResponseWithError.ofError<String>("Invalid email id or password entered")
+        }
+    }
+
+    override fun login(loginDto: LoginDto): ResponseWithError<*> {
+        val empOptnl = empRepo.findByEmailId(loginDto.userNameOrEmailId)
+        if (empOptnl.isPresent){
+            /*val grantedAuthorities = AuthorityUtils
+                        .createAuthorityList(*roles.toTypedArray())*/
+            var token=tokenHelper.generateToken(loginDto.userNameOrEmailId, emptyList())
+            return ResponseWithError.of(LoginTokenDetails(loginDto.userNameOrEmailId,token))
         } else {
             return ResponseWithError.ofError<String>("Invalid email id or password entered")
         }

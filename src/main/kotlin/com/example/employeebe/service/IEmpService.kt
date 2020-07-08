@@ -18,6 +18,7 @@ interface IEmpService {
 
     fun loginEmp(loginDto: LoginDto):ResponseWithError<*>
 
+    fun login(loginDto: LoginDto):ResponseWithError<*>
 
 
 }

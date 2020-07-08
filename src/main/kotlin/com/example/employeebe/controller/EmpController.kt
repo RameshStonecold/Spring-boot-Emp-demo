@@ -87,7 +87,8 @@ fun findByEmailId(@PathVariable("emailId") emailId:String):ResponseEntity<*> {
     fun createLoginCredentials(@RequestBody loginDto: LoginDto):ResponseEntity<*> {
 
         try {
-            val result = empService!!.loginEmp(loginDto)
+           // val result = empService!!.loginEmp(loginDto)
+            val result = empService!!.login(loginDto)
             if (result.isError) {
                 return ResponseEntity(ResponseWithError.ofError<String>(result.errorMsg), HttpStatus.BAD_REQUEST)
             }
